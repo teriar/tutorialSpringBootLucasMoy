@@ -15,7 +15,7 @@ public class AuthController {
      private UsuarioDao usuarioDao;
 
     @Autowired
-    private JWTUtil JWTUtil;
+    private JWTUtil jwTUtil;
 
     @RequestMapping(value="api/login", method = RequestMethod.POST)
     public String login(@RequestBody Usuario usuario){
@@ -23,10 +23,12 @@ public class AuthController {
 
         System.out.print(usuario);
 
-        if(usuarioDao.verificarCredenciales(usuario)){
+        Usuario usuarioLogueado = usuarioDao.obtenerUsuarioPorCredenciales(usuario);
+        if(usuarioLogueado !=null) {
+          String tokenJwt = jwTUtil.create(String.valueOf(usuarioLogueado.getId()), usuarioLogueado.getEmail());
 
-          return "OK";
-      }
+            return tokenJwt;
+        }
       return "FAIL";
 
     }
